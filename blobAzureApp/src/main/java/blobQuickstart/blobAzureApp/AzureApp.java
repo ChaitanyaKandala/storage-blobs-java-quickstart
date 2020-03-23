@@ -52,7 +52,7 @@ public class AzureApp
 	*    Then, update the storageConnectionString variable with your AccountName and Key and run the sample.
 	* *************************************************************************************************************************
 	*/
-	public static final String storageConnectionString = "UseDevelopmentStorage=true;";
+	public static final String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=confluentioteststorage;AccountKey=fGlA0O26YK0m6zkAINfPc8XGBEcYSUZBwDa1YP2qo5TL72GlasZ77pFz4I6P6ZUV46I+yDjm5eGRj9qtFYlACA==;EndpointSuffix=core.windows.net";
 	//"DefaultEndpointsProtocol=https;" +
 	//"AccountName=<account-name>;" +
 	//"AccountKey=<account-key>";
@@ -71,13 +71,14 @@ public class AzureApp
 			// Parse the connection string and create a blob client to interact with Blob storage
 			storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			blobClient = storageAccount.createCloudBlobClient();
-			container = blobClient.getContainerReference("quickstartcontainer");
+			container = blobClient.getContainerReference("container-inbound");
 
 			// Create the container if it does not exist with public access.
 			System.out.println("Creating container: " + container.getName());
 			container.createIfNotExists(BlobContainerPublicAccessType.CONTAINER, new BlobRequestOptions(), new OperationContext());		    
 
 			//Creating a sample file
+			/*
 			sourceFile = File.createTempFile("sampleFile", ".txt");
 			System.out.println("Creating a sample file at: " + sourceFile.toString());
 			Writer output = new BufferedWriter(new FileWriter(sourceFile));
@@ -90,18 +91,35 @@ public class AzureApp
 			//Creating blob and uploading file to it
 			System.out.println("Uploading the sample file ");
 			blob.uploadFromFile(sourceFile.getAbsolutePath());
-
+*/
 			//Listing contents of container
+			System.out.println("listBlobs() ");
 			for (ListBlobItem blobItem : container.listBlobs()) {
-			System.out.println("URI of blob is: " + blobItem.getUri());
-		}
+				System.out.println("URI of blob is: " + blobItem.getUri());
+			}
+
+			System.out.println("listBlobs(path) ");
+			for (ListBlobItem blobItem : container.listBlobs("topics")) {
+				System.out.println("URI of blob is: " + blobItem.getUri());
+			}
+			System.out.println("listBlobs(blank with true ) ");
+			for (ListBlobItem blobItem : container.listBlobs("", true)) {
+				System.out.println("URI of blob is: " + blobItem.getUri());
+			}
+			System.out.println("listBlobs(path with true) ");
+			for (ListBlobItem blobItem : container.listBlobs("topics/", true)) {
+				System.out.println("URI of blob is: " + blobItem.getUri());
+			}
 
 		// Download blob. In most cases, you would have to retrieve the reference
 		// to cloudBlockBlob here. However, we created that reference earlier, and 
 		// haven't changed the blob we're interested in, so we can reuse it. 
 		// Here we are creating a new file to download to. Alternatively you can also pass in the path as a string into downloadToFile method: blob.downloadToFile("/path/to/new/file").
+	/*
 		downloadedFile = new File(sourceFile.getParentFile(), "downloadedFile.txt");
 		blob.downloadToFile(downloadedFile.getAbsolutePath());
+
+	 */
 		} 
 		catch (StorageException ex)
 		{
